@@ -41,8 +41,8 @@ Edit according to your own environment.
 ```
 GCP_USER=$( gcloud config list account --format "value(core.account)" )
 GCP_PROJECT=$( gcloud config list project --format "value(core.project)" )
-GCP_REGION=us-west1
-GCP_ZONE=us-west1-b
+GCP_REGION=us-central1
+GCP_ZONE=us-central1-b
 CLUSTER_NAME=scylla-demo
 CLUSTER_VERSION=$( gcloud container get-server-config --zone ${GCP_ZONE} --format "value(validMasterVersions[0])" )
 ```
@@ -62,12 +62,15 @@ Then we'll create a GKE cluster with the following:
    gcloud container \
    clusters create "${CLUSTER_NAME}" \
    --cluster-version "${CLUSTER_VERSION}" \
+   --zone "${GCP_ZONE}" \
    --node-version "${CLUSTER_VERSION}" \
    --machine-type "n1-standard-8" \
    --num-nodes "2" \
    --disk-type "pd-ssd" --disk-size "20" \
+   --network "default" \
    --image-type "UBUNTU_CONTAINERD" \
-   --enable-stackdriver-kubernetes \
+   --logging "SYSTEM" \
+   --monitoring "SYSTEM" \
    --no-enable-autoupgrade \
    --no-enable-autorepair
    ```
@@ -83,6 +86,7 @@ Then we'll create a GKE cluster with the following:
     --machine-type "n1-standard-32" \
     --num-nodes "2" \
     --disk-type "pd-ssd" --disk-size "20" \
+    --network "default" \
     --node-taints role=cassandra-stress:NoSchedule \
     --image-type "UBUNTU_CONTAINERD" \
     --no-enable-autoupgrade \
@@ -98,6 +102,7 @@ Then we'll create a GKE cluster with the following:
    --machine-type "n1-standard-32" \
    --num-nodes "4" \
    --disk-type "pd-ssd" --disk-size "20" \
+   --network "default" \
    --local-nvme-ssd-block count="8" \
    --node-taints role=scylla-clusters:NoSchedule \
    --node-labels scylla.scylladb.com/node-type=scylla \
